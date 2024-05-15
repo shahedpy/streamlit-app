@@ -1,24 +1,34 @@
 import streamlit as st
 import pandas as pd
-from services import call_get_api
-from api import products_url, carts_url, users_url
+import requests
 
-st.set_page_config(page_title="Dummy API", page_icon=None, layout='wide', initial_sidebar_state='auto')
+# URLs
+base_url = "https://dummyjson.com/"
+products_url = base_url + "products"
+carts_url = base_url + "carts"
+users_url = base_url + "users"
+
+
+def call_api_and_display(url, title):
+    st.title(title)
+    st.write(url)
+    with st.spinner(f'Loading {title}...'):
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            df = pd.DataFrame(data.get(title.lower(), []))
+            st.dataframe(df, height=800, hide_index=True)
+        else:
+            st.error(f"Failed to fetch {title} data.")
+
+
+st.set_page_config(page_title="Dummy API", page_icon=None, layout='wide', initial_sidebar_state='auto') # noqa
 
 selected_page = st.sidebar.radio("Navigation", ["Products", "Carts", "Users"])
+
 if selected_page == "Products":
-    st.title('Products')
-    st.write(products_url)
-    data = call_get_api(products_url)
-    df = pd.DataFrame(data['products'])
-    st.dataframe(df, height=800)
+    call_api_and_display(products_url, "Products")
 elif selected_page == "Carts":
-    st.title('Carts')
-    data = call_get_api(carts_url)
-    df = pd.DataFrame(data['carts'])
-    st.dataframe(df, height=800)
+    call_api_and_display(carts_url, "Carts")
 elif selected_page == "Users":
-    st.title('Users')
-    data = call_get_api(users_url)
-    df = pd.DataFrame(data['users'])
-    st.dataframe(df, height=800)
+    call_api_and_display(users_url, "Users")
