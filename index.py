@@ -1,13 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-
-# URLs
-base_url = "https://dummyjson.com/"
-products_url = base_url + "products"
-carts_url = base_url + "carts"
-users_url = base_url + "users"
-
+from api_urls import api_urls
 
 def call_api_and_display(url, title):
     st.title(title)
@@ -27,8 +21,8 @@ st.set_page_config(page_title="Dummy API", page_icon=None, layout='wide', initia
 selected_page = st.sidebar.radio("Navigation", ["Products", "Carts", "Users"])
 
 if selected_page == "Products":
-    call_api_and_display(products_url, "Products")
+    call_api_and_display(api_urls['products'], "Products")
 elif selected_page == "Carts":
-    call_api_and_display(carts_url, "Carts")
+    call_api_and_display(api_urls['carts'], "Carts")
 elif selected_page == "Users":
-    call_api_and_display(users_url, "Users")
+    call_api_and_display(api_urls['users'], "Users")
